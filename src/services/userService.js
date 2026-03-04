@@ -37,3 +37,13 @@ exports.createUser = async (userData) => {
     delete newUser.password;
     return { id: result.insertId, ...newUser };
 };
+
+exports.getUserById = async (id) => {
+    const [rows] = await db.query('SELECT id, uid, email, name, phone, role, created_at FROM users WHERE id = ?', [id]);
+    if (rows.length === 0) {
+        const error = new Error('User not found.');
+        error.code = 404; // Not Found
+        throw error;
+    }
+    return rows[0];
+};

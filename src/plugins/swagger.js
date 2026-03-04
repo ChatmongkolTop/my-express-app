@@ -5,8 +5,8 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Domo API Documentation Test 04-03-2026',
-      version: '1.0.2',
+      title: 'Domo API Documentation Test',
+      version: '1.0.3',
       description: 'ตัวอย่าง API พร้อมโครงสร้างที่สะอาด',
     },
    servers: [
