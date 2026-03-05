@@ -28,7 +28,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 *                 example: admin@example.com
  *               password:
  *                 type: string
- *                 example: 1234
+ *                 example: 12345
  *     responses:
  *       200:
  *         description: Login successful
@@ -40,13 +40,27 @@ const authMiddleware = require('../middleware/authMiddleware');
  *                 code:
  *                   type: string
  *                   example: "00"
+ *                 request_id:
+ *                   type: string
  *                 response:
  *                   type: object
  *                   properties:
- *                     accessToken:
+ *                     id:
+ *                       type: integer
+ *                       example: 0
+ *                     name:
  *                       type: string
- *                     refreshToken:
+ *                     role:
  *                       type: string
+ *                     access_token:
+ *                       type: string
+ *                     refresh_token:
+ *                       type: string
+ *                     permissions:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["dashboard_view", "order_view"]
  */
 router.post('/login', authController.login);
 
@@ -63,7 +77,7 @@ router.post('/login', authController.login);
  *           schema:
  *             type: object
  *             properties:
- *               refreshToken:
+ *               refresh_token:
  *                 type: string
  *     responses:
  *       200:

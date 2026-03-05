@@ -17,8 +17,11 @@ exports.login = async (req, res) => {
     }
 
     try {
-        const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-        const user = rows[0];
+        const [userRows] = await db.query(
+            'SELECT u.*, sr.name as role FROM users u LEFT JOIN setting_role sr ON u.role_id = sr.id WHERE u.email = ?',
+            [email]
+        );
+        const user = userRows[0];
 
         if (!user) {
             return sendError(res, 'Invalid credentials', 401);
@@ -30,6 +33,13 @@ exports.login = async (req, res) => {
             return sendError(res, 'Invalid credentials', 401);
         }
 
+        // Get permissions
+        const [permissionRows] = await db.query(
+            'SELECT child FROM auth_item_child WHERE role_id = ?',
+            [user.role_id]
+        );
+        const permissions = permissionRows.map(p => p.child);
+
         // Payload สำหรับ Token
         const payload = { id: user.id, email: user.email, role: user.role };
 
@@ -37,7 +47,14 @@ exports.login = async (req, res) => {
         const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: ACCESS_TOKEN_LIFE });
         const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, { expiresIn: REFRESH_TOKEN_LIFE });
         
-        sendSuccess(res, { accessToken, refreshToken }, 'Login successful');
+        sendSuccess(res, {
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            permissions: permissions
+        }, 'Login successful');
 
     } catch (error) {
         console.error('Login error:', error);
@@ -46,16 +63,16 @@ exports.login = async (req, res) => {
 };
 
 exports.refreshToken = async (req, res) => {
-    const { refreshToken } = req.body;
+    const { refresh_token } = req.body;
 
-    if (!refreshToken) return sendError(res, 'Refresh Token is required', 400);
+    if (!refresh_token) return sendError(res, 'Refresh Token is required', 400);
 
     try {
-        const decoded = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
+        const decoded = jwt.verify(refresh_token, REFRESH_SECRET_KEY);
         const payload = { id: decoded.id, email: decoded.email, role: decoded.role };
         const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: ACCESS_TOKEN_LIFE });
 
-        sendSuccess(res, { accessToken }, 'Token refreshed successfully');
+        sendSuccess(res, { access_token: accessToken }, 'Token refreshed successfully');
     } catch (error) {
         return sendError(res, 'Invalid or Expired Refresh Token', 403);
     }
@@ -68,7 +85,7 @@ exports.getMe = async (req, res) => {
         const user = await userService.getUserById(userId);
         sendSuccess(res, user, 'User profile retrieved successfully');
     } catch (error) {
-        const httpStatus = error.code || 500;
+        const httpStatus = error.statusCode || 500;
         sendError(res, error.message, httpStatus);
     }
 };

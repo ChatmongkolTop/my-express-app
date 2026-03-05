@@ -32,7 +32,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 *           description: The user email
  *         role:
  *           type: string
- *           description: The user role
+ *           description: The user role name
  */
 
 /**
@@ -41,6 +41,8 @@ const authMiddleware = require('../middleware/authMiddleware');
  *   get:
  *     summary: Returns the list of all users
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of the users
@@ -51,7 +53,7 @@ const authMiddleware = require('../middleware/authMiddleware');
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', userController.getUsers);
+router.get('/', authMiddleware, userController.getUsers);
 
 /**
  * @swagger
