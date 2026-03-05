@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const db = require('../plugins/database');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const userService = require('../services/userService');
+const swaggerTokenStore = require('../utils/swaggerTokenStore');
 
 const SECRET_KEY = process.env.JWT_SECRET || 'my-secret-key-1234';
 const REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET || 'my-refresh-secret-key-456';
@@ -87,5 +88,15 @@ exports.getMe = async (req, res) => {
     } catch (error) {
         const httpStatus = error.statusCode || 500;
         sendError(res, error.message, httpStatus);
+    }
+};
+
+exports.generateSwaggerGuestPassword = (req, res) => {
+    try {
+        const guestPassword = swaggerTokenStore.generate();
+        sendSuccess(res, { username: 'guest', password: guestPassword, expires_in_minutes: 15 }, 'Swagger guest password generated successfully.');
+    } catch (error) {
+        console.error('Error generating Swagger guest password:', error);
+        sendError(res, 'Could not generate guest password.');
     }
 };

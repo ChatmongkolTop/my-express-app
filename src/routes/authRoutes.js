@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
+const checkRole = require('../middleware/roleMiddleware');
 
 /**
  * @swagger
@@ -112,5 +113,36 @@ router.post('/refresh', authController.refreshToken);
  *         description: Invalid Token
  */
 router.get('/me', authMiddleware, authController.getMe);
+
+/**
+ * @swagger
+ * /api/auth/swagger-guest-password:
+ *   post:
+ *     summary: Generate a temporary guest password for Swagger UI
+ *     description: Requires admin role. Generates a 6-digit password for the username 'guest' that is valid for 15 minutes.
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Temporary guest password generated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 response:
+ *                   type: object
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                       example: "guest"
+ *                     password:
+ *                       type: string
+ *                       example: "123456"
+ *       403:
+ *         description: Access Denied. Requires admin role.
+ */
+router.post('/swagger-guest-password', authMiddleware, checkRole(['admin']), authController.generateSwaggerGuestPassword);
 
 module.exports = router;
