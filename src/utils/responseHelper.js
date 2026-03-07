@@ -1,9 +1,9 @@
 const { v4: uuidv4 } = require('uuid');
 
-exports.sendSuccess = (res, data, message = 'succeed', httpStatus = 200) => {
+exports.sendSuccess = (res, data, message = 'succeed', httpStatus = 200, code = '00') => {
     res.status(httpStatus).json({
         success: true,
-        code: '00',
+        code: code,
         message: message,
         request_id: uuidv4(),
         data: data || {}

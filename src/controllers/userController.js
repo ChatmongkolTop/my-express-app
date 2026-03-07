@@ -13,7 +13,7 @@ exports.getUsers = async (req, res) => {
 exports.createUser = async (req, res) => {
     try {
         const newUser = await userService.createUser(req.body);
-        sendSuccess(res, newUser, res.__('USER_CREATED_SUCCESS'), 201);
+        sendSuccess(res, newUser, res.__('USER_CREATED_SUCCESS'), 201, 'USER_CREATED_SUCCESS');
     } catch (error) {
         const httpStatus = error.statusCode || 500;
         sendError(res, res.__(error.message), httpStatus);

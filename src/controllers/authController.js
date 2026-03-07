@@ -54,7 +54,7 @@ exports.login = async (req, res) => {
             access_token: accessToken,
             refresh_token: refreshToken,
             permissions: permissions
-        }, res.__('LOGIN_SUCCESS'));
+        }, res.__('LOGIN_SUCCESS'), 200, 'LOGIN_SUCCESS');
 
     } catch (error) {
         console.error('Login error:', error);
@@ -72,7 +72,7 @@ exports.refreshToken = async (req, res) => {
         const payload = { id: decoded.id, email: decoded.email, role: decoded.role };
         const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: ACCESS_TOKEN_LIFE });
 
-        sendSuccess(res, { access_token: accessToken }, res.__('REFRESH_SUCCESS'));
+        sendSuccess(res, { access_token: accessToken }, res.__('REFRESH_SUCCESS'), 200, 'REFRESH_SUCCESS');
     } catch (error) {
         return sendError(res, res.__('INVALID_REFRESH_TOKEN'), 403, 'AUTH_003');
     }
@@ -83,7 +83,7 @@ exports.getMe = async (req, res) => {
         // req.user is populated by authMiddleware from the token
         const userId = req.user.id;
         const user = await userService.getUserById(userId);
-        sendSuccess(res, user, res.__('USER_PROFILE_SUCCESS'));
+        sendSuccess(res, user, res.__('USER_PROFILE_SUCCESS'), 200, 'USER_PROFILE_SUCCESS');
     } catch (error) {
         const httpStatus = error.statusCode || 500;
         sendError(res, res.__(error.message), httpStatus);
@@ -93,7 +93,7 @@ exports.getMe = async (req, res) => {
 exports.generateSwaggerGuestPassword = (req, res) => {
     try {
         const guestPassword = swaggerTokenStore.generate();
-        sendSuccess(res, { username: 'guest', password: guestPassword, expires_in_minutes: 15 }, res.__('GUEST_PASSWORD_SUCCESS'));
+        sendSuccess(res, { username: 'guest', password: guestPassword, expires_in_minutes: 15 }, res.__('GUEST_PASSWORD_SUCCESS'), 200, 'GUEST_PASSWORD_SUCCESS');
     } catch (error) {
         console.error('Error generating Swagger guest password:', error);
         sendError(res, res.__('GUEST_PASSWORD_ERROR'));
