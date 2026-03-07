@@ -26,10 +26,9 @@ exports.sendError = (res, error, httpStatus = 500, code = null) => {
 
     res.status(httpStatus).json({
         success: false,
+        code: errorCode,
+        message: message,
         request_id: uuidv4(),
-        error: {
-            code: errorCode,
-            message: message
-        }
+        data: {}
     });
 };
