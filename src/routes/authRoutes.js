@@ -38,17 +38,17 @@ const checkRole = require('../middleware/roleMiddleware');
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 code:
  *                   type: string
  *                   example: "00"
  *                 request_id:
  *                   type: string
- *                 response:
+ *                 data:
  *                   type: object
  *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 0
  *                     name:
  *                       type: string
  *                     role:
@@ -61,7 +61,7 @@ const checkRole = require('../middleware/roleMiddleware');
  *                       type: array
  *                       items:
  *                         type: string
- *                       example: ["dashboard_view", "order_view"]
+ *                       example: ["string", "string"]
  */
 router.post('/login', authController.login);
 
@@ -102,10 +102,13 @@ router.post('/refresh', authController.refreshToken);
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 code:
  *                   type: string
  *                   example: "00"
- *                 response:
+ *                 data:
  *                   $ref: '#/components/schemas/User'
  *       401:
  *         description: Unauthorized
@@ -131,7 +134,10 @@ router.get('/me', authMiddleware, authController.getMe);
  *             schema:
  *               type: object
  *               properties:
- *                 response:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
  *                   type: object
  *                   properties:
  *                     username:

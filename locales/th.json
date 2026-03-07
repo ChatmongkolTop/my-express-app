@@ -1,0 +1,16 @@
+{
+    "AUTH_REQUIRED": "กรุณาระบุอีเมลและรหัสผ่าน",
+    "LOGIN_SUCCESS": "เข้าสู่ระบบสำเร็จ",
+    "INVALID_CREDENTIALS": "ข้อมูลรับรองไม่ถูกต้อง",
+    "REFRESH_TOKEN_REQUIRED": "จำเป็นต้องมี Refresh Token",
+    "REFRESH_SUCCESS": "รีเฟรช Token สำเร็จ",
+    "INVALID_REFRESH_TOKEN": "Refresh Token ไม่ถูกต้องหรือหมดอายุ",
+    "USER_PROFILE_SUCCESS": "ดึงข้อมูลโปรไฟล์สำเร็จ",
+    "GUEST_PASSWORD_SUCCESS": "สร้างรหัสผ่าน Guest สำเร็จ",
+    "GUEST_PASSWORD_ERROR": "ไม่สามารถสร้างรหัสผ่าน Guest ได้",
+    "INTERNAL_ERROR": "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์",
+    "ACCESS_DENIED_ROLE": "การเข้าถึงถูกปฏิเสธ: ต้องการสิทธิ์หนึ่งในนี้: %s",
+    "USER_CREATED_SUCCESS": "สร้างผู้ใช้งานสำเร็จ",
+    "EMAIL_ALREADY_EXISTS": "อีเมลนี้ถูกใช้งานแล้ว",
+    "USER_NOT_FOUND": "ไม่พบผู้ใช้งาน"
+}

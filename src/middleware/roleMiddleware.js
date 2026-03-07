@@ -8,7 +8,7 @@ const { sendError } = require('../utils/responseHelper');
 const checkRole = (requiredRoles) => {
     return (req, res, next) => {
         if (!req.user || !requiredRoles.includes(req.user.role)) {
-            return sendError(res, `Access Denied: Requires one of the following roles: ${requiredRoles.join(', ')}`, 403);
+            return sendError(res, res.__('ACCESS_DENIED_ROLE', requiredRoles.join(', ')), 403);
         }
         next();
     };

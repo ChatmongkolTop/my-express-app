@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { swaggerUi, specs } = require('./src/plugins/swagger');
 const routes = require('./src/routes');
 const swaggerAuth = require('./src/middleware/swaggerAuth');
+const i18n = require('./src/config/i18n');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,10 +12,11 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(i18n.init); // เริ่มต้นใช้งาน i18n
 
 // Swagger Documentation Route
-app.use('/api-docs', swaggerAuth, swaggerUi.serve, swaggerUi.setup(specs));
-//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+//app.use('/api-docs', swaggerAuth, swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 
 // Main Routes

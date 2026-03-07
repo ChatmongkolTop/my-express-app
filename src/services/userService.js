@@ -16,7 +16,7 @@ exports.createUser = async (userData) => {
     const [existingUser] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
 
     if (existingUser.length > 0) {
-        const error = new Error('This email is already in use.');
+        const error = new Error('EMAIL_ALREADY_EXISTS');
         error.statusCode = 409; // Conflict
         throw error;
     }
@@ -46,7 +46,7 @@ exports.getUserById = async (id) => {
         [id]
     );
     if (rows.length === 0) {
-        const error = new Error('User not found.');
+        const error = new Error('USER_NOT_FOUND');
         error.statusCode = 404; // Not Found
         throw error;
     }

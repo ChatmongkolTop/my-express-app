@@ -1,5 +1,5 @@
 const guestTokens = new Map();
-const GUEST_TOKEN_LIFETIME_MINUTES = 15; // กำหนดอายุรหัสผ่าน Guest (15 นาที)
+const GUEST_TOKEN_LIFETIME_MINUTES = parseInt(process.env.SWAGGER_GUEST_TOKEN_LIFE) || 15;
 
 /**
  * สร้างรหัสผ่าน 6 หลักแบบสุ่มสำหรับ Guest

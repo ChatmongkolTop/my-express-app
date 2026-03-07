@@ -49,9 +49,15 @@ const authMiddleware = require('../middleware/authMiddleware');
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 router.get('/', authMiddleware, userController.getUsers);
 

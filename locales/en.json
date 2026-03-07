@@ -1,0 +1,16 @@
+{
+    "AUTH_REQUIRED": "Email and password are required.",
+    "LOGIN_SUCCESS": "Login successful",
+    "INVALID_CREDENTIALS": "Invalid credentials",
+    "REFRESH_TOKEN_REQUIRED": "Refresh Token is required",
+    "REFRESH_SUCCESS": "Token refreshed successfully",
+    "INVALID_REFRESH_TOKEN": "Invalid or Expired Refresh Token",
+    "USER_PROFILE_SUCCESS": "User profile retrieved successfully",
+    "GUEST_PASSWORD_SUCCESS": "Swagger guest password generated successfully.",
+    "GUEST_PASSWORD_ERROR": "Could not generate guest password.",
+    "INTERNAL_ERROR": "Internal server error",
+    "ACCESS_DENIED_ROLE": "Access Denied: Requires one of the following roles: %s",
+    "USER_CREATED_SUCCESS": "User created successfully",
+    "EMAIL_ALREADY_EXISTS": "This email is already in use.",
+    "USER_NOT_FOUND": "User not found."
+}

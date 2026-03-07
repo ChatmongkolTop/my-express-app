@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
     // แนะนำให้เก็บรหัสผ่าน Admin ไว้ใน .env เพื่อความปลอดภัย
     const adminUser = process.env.SWAGGER_ADMIN_USER || 'admin';
     const adminPassword = process.env.SWAGGER_ADMIN_PASSWORD || 'supersecret'; // ควรเปลี่ยนรหัสนี้
-    const guestUser = 'guest';
+    const guestUser = process.env.SWAGGER_GUEST_USER || 'guest';
 
     const authHeader = req.headers.authorization;
 
