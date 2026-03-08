@@ -213,7 +213,11 @@ exports.resetPassword = async (req, res) => {
         }
 
         // 2. ตรวจสอบวันหมดอายุ
-        if (new Date() > new Date(resetToken.expires_at)) {
+        const now = new Date().getTime();
+        const tokenExpiresAt = new Date(resetToken.expires_at).getTime();
+
+        // ตรวจสอบว่าหมดอายุ หรือค่าวันที่ไม่ถูกต้อง (NaN)
+        if (isNaN(tokenExpiresAt) || now > tokenExpiresAt) {
              await db.query('UPDATE users_password_reset_tokens SET status = "expired" WHERE id = ?', [resetToken.id]);
              return sendError(res, res.__('EXPIRED_RESET_TOKEN'), 400, 'EXPIRED_RESET_TOKEN');
         }
