@@ -12,5 +12,6 @@
     "ACCESS_DENIED_ROLE": "Access Denied: Requires one of the following roles: %s",
     "USER_CREATED_SUCCESS": "User created successfully",
     "EMAIL_ALREADY_EXISTS": "This email is already in use.",
-    "USER_NOT_FOUND": "User not found."
+    "USER_NOT_FOUND": "User not found.",
+    "LOGOUT_SUCCESS": "Logged out successfully"
 }

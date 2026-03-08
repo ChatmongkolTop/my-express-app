@@ -12,5 +12,6 @@
     "ACCESS_DENIED_ROLE": "การเข้าถึงถูกปฏิเสธ: ต้องการสิทธิ์หนึ่งในนี้: %s",
     "USER_CREATED_SUCCESS": "สร้างผู้ใช้งานสำเร็จ",
     "EMAIL_ALREADY_EXISTS": "อีเมลนี้ถูกใช้งานแล้ว",
-    "USER_NOT_FOUND": "ไม่พบผู้ใช้งาน"
+    "USER_NOT_FOUND": "ไม่พบผู้ใช้งาน",
+    "LOGOUT_SUCCESS": "ออกจากระบบสำเร็จ"
 }

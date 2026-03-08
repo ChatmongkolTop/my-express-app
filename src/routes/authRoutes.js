@@ -88,6 +88,38 @@ router.post('/refresh', authController.refreshToken);
 
 /**
  * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Revoke Refresh Token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refresh_token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 code:
+ *                   type: string
+ *                   example: "LOGOUT_SUCCESS"
+ */
+router.post('/logout', authController.logout);
+
+/**
+ * @swagger
  * /api/auth/me:
  *   get:
  *     summary: Get current user profile

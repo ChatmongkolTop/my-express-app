@@ -48,6 +48,24 @@ exports.login = async (req, res) => {
         const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: ACCESS_TOKEN_LIFE });
         const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, { expiresIn: REFRESH_TOKEN_LIFE });
         
+        // เก็บข้อมูล Refresh Token ลง Database
+        const decodedRefreshToken = jwt.decode(refreshToken);
+        const expiresAt = new Date(decodedRefreshToken.exp * 1000);
+        const userAgent = req.headers['user-agent'] || 'Unknown';
+        let ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+
+        // จัดการรูปแบบ IP Address ให้เป็น IPv4 ที่คุ้นเคย
+        if (ipAddress === '::1') {
+            ipAddress = '127.0.0.1';
+        } else if (ipAddress && ipAddress.startsWith('::ffff:')) {
+            ipAddress = ipAddress.replace('::ffff:', '');
+        }
+
+        await db.query(
+            'INSERT INTO users_refresh_tokens (user_id, token, device_info, ip_address, expires_at) VALUES (?, ?, ?, ?, ?)',
+            [user.id, refreshToken, userAgent, ipAddress, expiresAt]
+        );
+
         sendSuccess(res, {
             name: user.name,
             role: user.role,
@@ -69,6 +87,15 @@ exports.refreshToken = async (req, res) => {
 
     try {
         const decoded = jwt.verify(refresh_token, REFRESH_SECRET_KEY);
+
+        // ตรวจสอบใน Database ว่า Token นี้ถูก Revoke หรือไม่
+        const [storedTokens] = await db.query('SELECT * FROM users_refresh_tokens WHERE token = ?', [refresh_token]);
+        const storedToken = storedTokens[0];
+
+        if (!storedToken || storedToken.is_revoked) {
+            return sendError(res, res.__('INVALID_REFRESH_TOKEN'), 403, 'AUTH_003');
+        }
+
         const payload = { id: decoded.id, email: decoded.email, role: decoded.role };
         const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: ACCESS_TOKEN_LIFE });
 
@@ -76,6 +103,19 @@ exports.refreshToken = async (req, res) => {
     } catch (error) {
         return sendError(res, res.__('INVALID_REFRESH_TOKEN'), 403, 'AUTH_003');
     }
+};
+
+exports.logout = async (req, res) => {
+    const { refresh_token } = req.body;
+    
+    if (!refresh_token) {
+        // ถ้าไม่มี Token ส่งมา ก็ถือว่า Logout สำเร็จ (Client ลบของตัวเองทิ้ง)
+        return sendSuccess(res, null, res.__('LOGOUT_SUCCESS'), 200, 'LOGOUT_SUCCESS');
+    }
+
+    // Revoke Token ใน Database
+    await db.query('UPDATE users_refresh_tokens SET is_revoked = 1 WHERE token = ?', [refresh_token]);
+    sendSuccess(res, null, res.__('LOGOUT_SUCCESS'), 200, 'LOGOUT_SUCCESS');
 };
 
 exports.getMe = async (req, res) => {
