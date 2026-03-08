@@ -13,5 +13,12 @@
     "USER_CREATED_SUCCESS": "สร้างผู้ใช้งานสำเร็จ",
     "EMAIL_ALREADY_EXISTS": "อีเมลนี้ถูกใช้งานแล้ว",
     "USER_NOT_FOUND": "ไม่พบผู้ใช้งาน",
-    "LOGOUT_SUCCESS": "ออกจากระบบสำเร็จ"
+    "LOGOUT_SUCCESS": "ออกจากระบบสำเร็จ",
+    "EMAIL_REQUIRED": "กรุณาระบุอีเมล",
+    "FORGOT_PASSWORD_SUCCESS": "ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลเรียบร้อยแล้ว",
+    "EMAIL_SEND_FAILED": "ไม่สามารถส่งอีเมลได้ กรุณาตรวจสอบการตั้งค่าเซิร์ฟเวอร์",
+    "DATA_REQUIRED": "ข้อมูลไม่ครบถ้วน",
+    "INVALID_RESET_TOKEN": "Token ไม่ถูกต้องหรือถูกใช้งานไปแล้ว",
+    "EXPIRED_RESET_TOKEN": "Token หมดอายุแล้ว",
+    "PASSWORD_RESET_SUCCESS": "เปลี่ยนรหัสผ่านสำเร็จ"
 }

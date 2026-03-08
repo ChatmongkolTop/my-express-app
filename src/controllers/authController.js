@@ -4,6 +4,8 @@ const db = require('../plugins/database');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const userService = require('../services/userService');
 const swaggerTokenStore = require('../utils/swaggerTokenStore');
+const crypto = require('crypto');
+const emailService = require('../services/emailService');
 
 const SECRET_KEY = process.env.JWT_SECRET || 'my-secret-key-1234';
 const REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET || 'my-refresh-secret-key-456';
@@ -137,5 +139,102 @@ exports.generateSwaggerGuestPassword = (req, res) => {
     } catch (error) {
         console.error('Error generating Swagger guest password:', error);
         sendError(res, res.__('GUEST_PASSWORD_ERROR'));
+    }
+};
+
+exports.forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return sendError(res, res.__('EMAIL_REQUIRED'), 400);
+    }
+
+    try {
+        const [users] = await db.query('SELECT id, email, name FROM users WHERE email = ?', [email]);
+        const user = users[0];
+
+        if (!user) {
+            return sendError(res, res.__('USER_NOT_FOUND'), 404, 'USER_NOT_FOUND');
+        }
+
+        // Generate Token (Random Hex String)
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // หมดอายุใน 15 นาที
+
+        const userAgent = req.headers['user-agent'] || 'Unknown';
+        let ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+
+        if (ipAddress === '::1') ipAddress = '127.0.0.1';
+        else if (ipAddress && ipAddress.startsWith('::ffff:')) ipAddress = ipAddress.replace('::ffff:', '');
+
+        // ยกเลิก Token เก่าที่ยัง Active อยู่ (เพื่อให้เหลือ Token ล่าสุดอันเดียว)
+        await db.query(
+            'UPDATE users_password_reset_tokens SET status = ? WHERE user_id = ? AND status = ?',
+            ['revoked', user.id, 'active']
+        );
+
+        await db.query(
+            'INSERT INTO users_password_reset_tokens (user_id, token, status, device_info, ip_address, expires_at) VALUES (?, ?, ?, ?, ?, ?)',
+            [user.id, token, 'active', userAgent, ipAddress, expiresAt]
+        );
+
+        // Send Email
+        const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+        await emailService.sendPasswordResetEmail(user.email, resetLink, user.name);
+
+        sendSuccess(res, null, res.__('FORGOT_PASSWORD_SUCCESS'), 200, 'FORGOT_PASSWORD_SUCCESS');
+    } catch (error) {
+        console.error('Forgot Password Error:', error);
+        if (error.message === 'EMAIL_SEND_FAILED') {
+            sendError(res, res.__('EMAIL_SEND_FAILED'), 500, 'EMAIL_SEND_FAILED');
+        } else {
+            sendError(res, res.__('INTERNAL_ERROR'));
+        }
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    const { token, new_password } = req.body;
+
+    if (!token || !new_password) {
+        return sendError(res, res.__('DATA_REQUIRED'), 400);
+    }
+
+    try {
+        // 1. ตรวจสอบ Token
+        const [tokens] = await db.query(
+            'SELECT * FROM users_password_reset_tokens WHERE token = ? AND status = "active"',
+            [token]
+        );
+        const resetToken = tokens[0];
+
+        if (!resetToken) {
+            return sendError(res, res.__('INVALID_RESET_TOKEN'), 400, 'INVALID_RESET_TOKEN');
+        }
+
+        // 2. ตรวจสอบวันหมดอายุ
+        if (new Date() > new Date(resetToken.expires_at)) {
+             await db.query('UPDATE users_password_reset_tokens SET status = "expired" WHERE id = ?', [resetToken.id]);
+             return sendError(res, res.__('EXPIRED_RESET_TOKEN'), 400, 'EXPIRED_RESET_TOKEN');
+        }
+
+        // 3. ดึงข้อมูล User และ Hash รหัสผ่านใหม่
+        const [users] = await db.query('SELECT * FROM users WHERE id = ?', [resetToken.user_id]);
+        const user = users[0];
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(new_password, salt);
+
+        // 4. อัปเดตรหัสผ่านและสถานะ Token
+        await db.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, user.id]);
+        await db.query('UPDATE users_password_reset_tokens SET status = "used" WHERE id = ?', [resetToken.id]);
+
+        // 5. ส่งอีเมลแจ้งเตือน (Security Notification)
+        await emailService.sendPasswordChangedEmail(user.email, user.name);
+
+        sendSuccess(res, null, res.__('PASSWORD_RESET_SUCCESS'), 200, 'PASSWORD_RESET_SUCCESS');
+    } catch (error) {
+        console.error('Reset Password Error:', error);
+        sendError(res, res.__('INTERNAL_ERROR'));
     }
 };

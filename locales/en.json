@@ -13,5 +13,12 @@
     "USER_CREATED_SUCCESS": "User created successfully",
     "EMAIL_ALREADY_EXISTS": "This email is already in use.",
     "USER_NOT_FOUND": "User not found.",
-    "LOGOUT_SUCCESS": "Logged out successfully"
+    "LOGOUT_SUCCESS": "Logged out successfully",
+    "EMAIL_REQUIRED": "Email is required",
+    "FORGOT_PASSWORD_SUCCESS": "Password reset link has been sent to your email.",
+    "EMAIL_SEND_FAILED": "Failed to send email. Please check server configuration.",
+    "DATA_REQUIRED": "Data required.",
+    "INVALID_RESET_TOKEN": "Invalid or used reset token.",
+    "EXPIRED_RESET_TOKEN": "Reset token has expired.",
+    "PASSWORD_RESET_SUCCESS": "Password has been reset successfully."
 }
